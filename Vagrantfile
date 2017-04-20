@@ -24,15 +24,7 @@ Vagrant.configure(2) do |config|
   #config.vm.synced_folder "magento/", "/home/vagrant/repos/magento"
   #, :owner => "life", :extra => 'dmode=775,fmode=774'
 
-  config.vm.synced_folder "./src", "/var/www/magento",
-        id: "site",
-        mount_options: ['dmode=776', 'fmode=664'],
-        owner: "vagrant",
-        group: "vagrant"
-        #owner: "www-data",
-        #group: "www-data"
-
-config.vm.synced_folder "./src", "/var/www/vagon.dev",
+  config.vm.synced_folder "./src", "/var/www/vagon.dev",
         id: "vagon",
         mount_options: ['dmode=776', 'fmode=664'],
         owner: "vagrant",

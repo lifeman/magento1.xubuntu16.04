@@ -1,3 +1,4 @@
 ---
 site_pub: ""
+ansible_user: vagrant
 

@@ -35,12 +35,14 @@
   with_items:
     - DELETE FROM mysql.user WHERE User=''
   changed_when: False
+  ignore_errors: True
 
 - name: Disallow root login remotely
   command: 'mysql -ne "{{ item }}"'
   with_items:
     - DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')
   changed_when: False
+  ignore_errors: True
 
 - name: Remove test database and access to it
   command: 'mysql -ne "{{ item }}"'
@@ -50,16 +52,17 @@
   changed_when: False
   ignore_errors: True
 
-- name: Billing modify
-  command: 'mysql -ne "{{ item }}"'
-  with_items:
-    - set global sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
-    - set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
-  changed_when: False
-  ignore_errors: True
+#- name: Billing modify
+#  command: 'mysql -ne "{{ item }}"'
+#  with_items:
+#    - set global sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
+#    - set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
+#  changed_when: False
+#  ignore_errors: True
 
 - name: Reload privilege tables
   command: 'mysql -ne "{{ item }}"'
   with_items:
     - FLUSH PRIVILEGES
   notify: restart mysql
+  ignore_errors: True

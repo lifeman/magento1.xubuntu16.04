@@ -1,6 +1,8 @@
 .idea
 .vagrant
+ansible/group_vars/*.yml
+
 /src/*
 !/src/README.md
-temp
-ansible/group_vars/*.yml
+.*
+!/.gitignore

@@ -21,6 +21,7 @@
     - git
     - htop
     - mc
+    - telnet
 
 - include: sublime3.yml
   tags: sublime3

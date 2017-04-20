@@ -3,6 +3,7 @@
     repo: "ppa:ondrej/php"
     state: "present"
     update_cache: yes
+    #sudo add-apt-repository ppa:ondrej/php
 
 - name: php - install base packages
   ignore_errors: yes
