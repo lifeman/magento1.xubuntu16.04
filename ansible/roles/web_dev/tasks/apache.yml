@@ -1,0 +1,50 @@
+---
+- name: Ensure Apache installed
+  apt: pkg=apache2 state=latest
+  sudo: yes
+
+- name: Make the Apache load under our user account
+  lineinfile: dest=/etc/apache2/envvars regexp="^export {{ item.param }}=" line="export {{ item.param }}={{ item.value }}"
+  with_items :
+    - { param: APACHE_RUN_USER, value: "{{ ansible_user }}" }
+    - { param: APACHE_RUN_GROUP, value: "{{ ansible_user }}" }
+  sudo: yes
+  notify : restart apache
+
+#- name: Change Apache default site
+#  template: src=apache2-default.j2 dest=/etc/apache2/sites-available/000-default.conf owner=root group=root mode=0644
+#  sudo: yes
+#  notify : restart apache
+
+
+- name: Remove /var/lock/apache to prevent permission problem
+  file: path=/var/lock/apache2 state=absent
+  sudo: yes
+
+- name: enable apache mods
+  sudo: yes
+  apache2_module: state=present name={{ item }}
+  with_items:
+    - headers
+    - rewrite
+    - ssl
+  notify : restart apache
+
+- name: Service Apache
+  service: name=apache2 state=started enabled=yes
+  sudo: yes
+
+#- name: Disable site 000-default
+#  become: true
+#  command: a2dissite 000-default.conf
+#  with_items: "{{ site_name }}"
+#  notify:
+#  - Restart apache
+
+#- name: Remove default vhost in sites-enabled.
+#  file:
+#    path: "{{ apache_conf_path }}/sites-enabled/{{ apache_default_vhost_filename }}"
+#    state: absent
+#  notify: restart apache
+#  when: apache_remove_default_vhost
+

@@ -1,0 +1,15 @@
+---
+  # sublime for IntelliJ
+- name: Install add-apt-repostory
+  become: yes
+  apt: name=software-properties-common state=latest
+
+- name: Sublime 3 Repository
+  become: yes
+  apt_repository: repo='ppa:webupd8team/sublime-text-3'
+
+- name: Install Sublime 3
+  become: yes
+  apt: name={{item}} state=latest
+  with_items:
+    - sublime-text-installer

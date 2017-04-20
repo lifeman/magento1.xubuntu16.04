@@ -1,0 +1,11 @@
+# ansible-playbook -i hosts main.yml --user lifeman -K
+---
+- name: Create vhost {{ site_name }}
+  hosts: all
+  roles:
+    - vhost
+
+  tasks:
+    - debug:
+         msg: "{{ site_name }} ansible user {{ ansible_user }} "
+#    - { include: roles/common/tasks/mpv_player.yml, become: yes }

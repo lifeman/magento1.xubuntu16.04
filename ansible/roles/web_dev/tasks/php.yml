@@ -1,0 +1,94 @@
+- name: php - add repository
+  apt_repository:
+    repo: "ppa:ondrej/php"
+    state: "present"
+    update_cache: yes
+
+- name: php - install base packages
+  ignore_errors: yes
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+
+#       6.5
+      - "libapache2-mod-php5.6"
+      - "php5.6-common"
+      - "php5.6-cli"
+      - "php5.6-fpm"
+      - "php5.6-mysql"
+      - "php5.6-pgsql"
+      - "php5.6-gd"
+      - "php5.6-bz2"
+      - "php5.6-zip"
+      - "php5.6-json"
+      - "php5.6-xml"
+      - "php5.6-curl"
+      - "php5.6-intl"
+      - "php5.6-mbstring"
+      - "php5.6-mcrypt"
+      - "php5.6-bcmath"
+      - "php5.6-soap"
+      - "php5.6-opcache"
+      - "php5.6-xdebug"
+      - "php5.6-xsl"
+      - "php5.6-gettext"
+
+#       7.0
+      - "libapache2-mod-php7.0"
+      - "php7.0-common"
+      - "php7.0-cli"
+      - "php7.0-fpm"
+      - "php7.0-mysql"
+      - "php7.0-pgsql"
+      - "php7.0-gd"
+      - "php7.0-bz2"
+      - "php7.0-zip"
+      - "php7.0-json"
+      - "php7.0-xml"
+      - "php7.0-curl"
+      - "php7.0-intl"
+      - "php7.0-mbstring"
+      - "php7.0-mcrypt"
+      - "php7.0-bcmath"
+      - "php7.0-soap"
+      - "php7.0-opcache"
+      - "php7.0-xdebug"
+      - "php7.0-xsl"
+      - "php7.0-gettext"
+
+#       7.1
+      - "libapache2-mod-php7.1"
+      - "php7.1-common"
+      - "php7.1-cli"
+      - "php7.1-fpm"
+      - "php7.1-mysql"
+      - "php7.1-pgsql"
+      - "php7.1-gd"
+      - "php7.1-bz2"
+      - "php7.1-zip"
+      - "php7.1-json"
+      - "php7.1-xml"
+      - "php7.1-curl"
+      - "php7.1-intl"
+      - "php7.1-mbstring"
+      - "php7.1-mcrypt"
+      - "php7.1-bcmath"
+      - "php7.1-soap"
+      - "php7.1-opcache"
+      - "php7.1-xdebug"
+      - "php7.1-xsl"
+      - "php7.1-gettext"
+
+#    phpMyAdmin only interactive
+#      - "phpmyadmin"
+
+- name: php - ensure pid directory exists
+  become: true
+  file:
+    path: "/run/php"
+    state: "directory"
+    owner: "root"
+    group: "root"
+    mode: 0755

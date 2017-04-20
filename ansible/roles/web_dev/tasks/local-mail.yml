@@ -1,0 +1,34 @@
+---
+- name: Ensure Postfix is installed
+  apt: pkg="{{ item }}" state=latest
+  with_items:
+    - postfix
+    - postfix-pcre
+    - dovecot-common
+    - dovecot-pop3d
+  sudo: yes
+
+- name: Copy header_checks file with root password credentials
+  template: src=header_checks.j2 dest=/etc/postfix/header_checks owner=root mode=0644 backup=yes
+  sudo: yes
+
+- name: Postfix main.cf
+  lineinfile:
+    dest: /etc/postfix/main.cf
+    line: "{{ item }}"
+  with_items:
+        - header_checks = regexp:/etc/postfix/header_checks
+        - virtual_alias_maps = pcre:/etc/postfix/virtual.pcre
+
+- name: Copy virtual.pcre file with root password credentials
+  template: src=virtual.pcre.j2 dest=/etc/postfix/virtual.pcre owner=root mode=0644 backup=yes
+  sudo: yes
+
+
+- name: Reload postfix
+  command: "{{ item }}"
+  with_items:
+    - postmap /etc/postfix/header_checks
+    - postfix reload
+  sudo: yes
+

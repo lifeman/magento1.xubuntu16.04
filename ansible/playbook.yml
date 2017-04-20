@@ -1,0 +1,13 @@
+---
+- name: Set up a dev stack for Magento2 on Ubuntu 16.04
+  hosts: all
+  become: no
+  become_method: sudo
+  roles:
+    - common
+    - web_dev
+#    - php
+#    - nginx
+#    - mariadb
+#    - redis
+#    - magento2

@@ -1,0 +1,26 @@
+---
+- name: Update apt cache
+  become: yes
+  apt: update-cache=yes
+  tags: common
+
+#- name: Repos directory
+#  become: yes
+#  file: path=/home/vagrant/repos/ state=directory owner=vagrant group=vagrant
+
+- name: Repos directory
+  become: yes
+  file: path=/var/www/magento/ state=directory owner=vagrant group=vagrant
+
+- name: Install dev packages
+  become: yes
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - vim
+    - curl
+    - git
+    - htop
+    - mc
+
+- include: sublime3.yml
+  tags: sublime3

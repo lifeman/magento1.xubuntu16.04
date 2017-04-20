@@ -1,0 +1,61 @@
+# Site setup
+
+- name: Configuration file for {{ site_name }}
+  become: true
+  template: src=site.j2 dest=/etc/apache2/sites-available/{{ site_name }}.conf owner=root owner=root mode=0644
+  #  template: src=servername.j2 dest=/etc/apache2/conf-enabled/servername.conf owner=root mode=0644
+
+- name: Enable site {{ site_name }}
+  become: true
+  command: a2ensite {{ site_name }}.conf
+  with_items: "{{ site_name }}"
+  notify:
+  - Restart apache
+
+#- name: Enable site {{ site_name }}
+#  file:
+#    state: link
+#    src: /etc/apache2/sites-available/{{ site_name }}.conf
+#    dest: /etc/apache2/sites-enabled/{{ site_name }}.conf
+#  notify:
+#  - Restart apache
+
+#- name: Create snippets directory for {{ site_name }}
+#  file: name=/etc/apache2/snippets/{{ site_name }} state=directory
+
+- name: Create directory /var/www/{{ site_name }}
+  become: true
+  file: state=directory dest=/var/www/{{ site_name }} owner={{ ansible_user }} group={{ ansible_user }} recurse=yes
+
+- name: Create directory /var/www/{{ site_name }}/{{ site_pub }}
+  become: true
+  file: state=directory dest=/var/www/{{ site_name }}/{{ site_pub }} owner={{ ansible_user }} group={{ ansible_user }} recurse=yes
+
+- name: copy phpinfo.php file for {{ site_name }}
+  template: src=phpinfo.php dest=/var/www/{{ site_name }}/{{ site_pub }}/phpinfo.php owner={{ ansible_user }}
+
+- name: Add to /etc/hosts
+  become: true
+  lineinfile: dest=/etc/hosts regexp="^{{ item.param }}\t{{ item.value }}" line="{{ item.param }}\t{{ item.value }}"
+  with_items :
+      - { param: 127.0.0.1, value: "{{ site_name }}" }
+
+## SSL
+#
+#- name: Install SSL certificate
+#  copy:
+#    content: '{{ cert }}{{ chain_certificates|default("")|join("") }}'
+#    dest: /etc/apache2/certs/{{ site_name }}.chained.ssl.crt
+#  when: cert is defined
+#  notify:
+#  - Restart apache
+#
+#- name: Install SSL private key
+#  copy:
+#    content: "{{ private_key }}"
+#    dest: /etc/ssl/private/{{ site_name }}.ssl.key
+#    mode: 640
+#  when: private_key is defined
+#  notify:
+#  - Restart apache
+

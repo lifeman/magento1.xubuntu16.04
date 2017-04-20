@@ -1,0 +1,65 @@
+---
+- name: Ensure MySQL is installed
+  apt: pkg="{{ item }}" state=latest
+  with_items:
+    - python-mysqldb
+    - mysql-client
+    - mysql-server
+    - mysql-workbench
+  sudo: yes
+  notify : restart mysql
+
+
+- name: Service Mysql
+  service: name=mysql state=started enabled=yes
+  sudo: yes
+
+#backup=yes
+- name: Copy .my.cnf file with root password credentials
+  template: src=my.cnf.j2 dest=/root/.my.cnf owner=root mode=0600 backup=yes
+  sudo: yes
+
+- name: Create root MySQL users
+  ignore_errors: yes
+  mysql_user: name="{{ mysql_root_user }}" password="{{ mysql_root_pass }}" host="{{ item }}" priv=*.*:ALL,GRANT state=present
+  with_items:
+    - "%"
+    - 127.0.0.1
+    - ::1
+    - localhost
+  sudo: yes
+  notify: restart mysql
+
+- name: Remove anonymous users
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - DELETE FROM mysql.user WHERE User=''
+  changed_when: False
+
+- name: Disallow root login remotely
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')
+  changed_when: False
+
+- name: Remove test database and access to it
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - DROP DATABASE test
+    - DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'
+  changed_when: False
+  ignore_errors: True
+
+- name: Billing modify
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - set global sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
+    - set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
+  changed_when: False
+  ignore_errors: True
+
+- name: Reload privilege tables
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - FLUSH PRIVILEGES
+  notify: restart mysql

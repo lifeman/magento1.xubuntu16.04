@@ -1,0 +1,21 @@
+---
+
+#- name: Package | Install lists packages
+#  become: yes
+#  apt: pkg={{ item }} state=installed
+#  tags: package
+#  with_items:
+#    - meld
+#    - wireshark
+#    - gcolor2
+#
+- include: apache.yml
+- include: php.yml
+- include: mysql.yml
+#- include: local-mail.yml
+#- include: notify-test.yml
+
+
+
+
+
